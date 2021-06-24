@@ -37,6 +37,25 @@ func course(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "This is "+params["courseid"])
 	// fmt.Fprintf(w, "\n")
 	// fmt.Fprintf(w, r.Method)
+	if r.Method == "GET" {
+		if _, ok := courses[params["courseid"]]; ok {
+			json.NewEncoder(w).Encode(courses[params["courseid"]])
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("404 - No course found"))
+		}
+	}
+	
+	if r.Method == "DELETE" {
+		if _, ok := courses[params["courseid"]]; ok {
+			delete(courses, params["courseid"])
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusNotFound)
+			w.Write([]byte("404 - No course found"))
+		}
+	}
+
 	if r.Header.Get("Content-type") == "application/json" {
 		// POST is for creating new course
 		if r.Method == "POST" {
